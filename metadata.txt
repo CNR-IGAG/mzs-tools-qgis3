@@ -1,0 +1,39 @@
+# This file contains metadata for your plugin. Since 
+# version 2.0 of QGIS this is the proper way to supply 
+# information about a plugin. The old method of 
+# embedding metadata in __init__.py will 
+# is no longer supported since version 2.0.
+
+# This file should be included when you package your plugin.# Mandatory items:
+
+[general]
+name=MzS Tools
+qgisMinimumVersion=3.4
+description=Plugin for Italian seismic microzonation.
+version=0.1
+author=CNR-IGAG
+email=labgis@igag.cnr.it
+
+about=The plugin allows the creation of the database and the cartographic representation of the Italian seismic microzonation studies for levels 1, 2 and 3 according to the standards of representation and computer archiving version 4.1 (http://www.protezionecivile.gov.it/jcms/en/standard_studi_ms.wp?request_locale=en). Il plugin consente la creazione della banca dati e la rappresentazione cartografica degli studi di microzonazione sismica italiana per i livelli 1, 2 e 3 secondo gli Standard di rappresentazione ed archiviazione informatica versione 4.1 (http://www.protezionecivile.gov.it/jcms/it/standard_studi_ms.wp?request_locale=it).
+
+tracker=https://github.com/CNR-IGAG/mzs-tools/issues
+repository=https://github.com/CNR-IGAG/mzs-tools-qgis3
+# End of mandatory metadata
+
+# Recommended items:
+
+# Uncomment the following line and add your changelog:
+# changelog=
+
+# Tags are comma separated with spaces allowed
+tags=python qgis qgis-plugin seismic-hazard
+
+homepage=https://github.com/CNR-IGAG/mzs-tools-qgis3
+category=Plugins
+icon=icon.png
+# experimental flag
+experimental=True
+
+# deprecated flag (applies to the whole plugin, not just a single version)
+deprecated=False
+
