@@ -9,7 +9,16 @@ Welcome to MzSTools's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
+    :glob:
+
+Python modules docs:
+
+.. toctree::
+    :maxdepth: 2
+    :glob:
+
+    modules/*
 
 Indices and tables
 ==================
@@ -17,4 +26,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
