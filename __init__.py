@@ -32,5 +32,5 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :type iface: QgsInterface
     """
     #
-    from .mzs_tools import MzSTools
+    from .MzSTools import MzSTools
     return MzSTools(iface)
