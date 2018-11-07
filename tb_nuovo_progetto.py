@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import range
 # -*- coding: utf-8 -*-
 #-------------------------------------------------------------------------------
 # Name:		tb_nuovo_progetto.py
@@ -5,9 +7,9 @@
 # Created:	 08-02-2018
 #-------------------------------------------------------------------------------
 
-from PyQt4 import QtGui, uic
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qgis.PyQt import uic
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
 from qgis.utils import *
 from qgis.core import *
 from qgis.gui import *
@@ -18,7 +20,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 	os.path.dirname(__file__), 'tb_nuovo_progetto.ui'))
 
 
-class nuovo_progetto(QtGui.QDialog, FORM_CLASS):
+class nuovo_progetto(QDialog, FORM_CLASS):
 	def __init__(self, parent=None):
 		"""Constructor."""
 		self.iface = iface
@@ -39,7 +41,7 @@ class nuovo_progetto(QtGui.QDialog, FORM_CLASS):
 
 		dizio_comuni = {}
 		dict_comuni = {}
-		with open(tabella_controllo, 'rb') as csvfile:
+		with open(tabella_controllo, 'rt') as csvfile:
 			csvreader = csv.reader(csvfile, delimiter=';')
 			for row in csvreader:
 				cod_istat = str(row[2])
@@ -114,7 +116,7 @@ class nuovo_progetto(QtGui.QDialog, FORM_CLASS):
 					zip_ref = zipfile.ZipFile(pacchetto, 'r')
 					zip_ref.extractall(dir_out)
 					zip_ref.close()
-					for x, y in dict_comuni.iteritems():
+					for x, y in dict_comuni.items():
 						if x == cod_istat:
 							comune_nome = (y[6:]).replace("_"," ")
 							path_comune = dir_out + os.sep + y
@@ -123,28 +125,28 @@ class nuovo_progetto(QtGui.QDialog, FORM_CLASS):
 					metadata = path_comune + os.sep + "allegati" + os.sep + comune_nome + " metadata.txt"
 					f = open(metadata,'a')
 					f.write("METADATA\nMunicipality of "+ comune_nome +":\n-------------------------------\n\n")
-					f.write("Expert: " + unicode(professionista).encode('utf-8') + "\n")
-					f.write("Expert's phone: " + unicode(tel_prof).encode('utf-8') + "\n")
-					f.write("Expert's email: " + unicode(email_prof).encode('utf-8') + "\n")
-					f.write("Expert's website: " + unicode(sito_prof).encode('utf-8') + "\n")
+					f.write("Expert: " + professionista + "\n")
+					f.write("Expert's phone: " + tel_prof + "\n")
+					f.write("Expert's email: " + email_prof + "\n")
+					f.write("Expert's website: " + sito_prof + "\n")
 					f.write("Date: " + data_meta + "\n")
-					f.write("Data owner: " + unicode(propretario).encode('utf-8') + "\n")
-					f.write("Owner's phone: " + unicode(tel_prop).encode('utf-8') + "\n")
-					f.write("Owner's email: " + unicode(email_prop).encode('utf-8') + "\n")
-					f.write("Owner's website: " + unicode(sito_prop).encode('utf-8') + "\n")
-					f.write("Keyword: " + unicode(keyword).encode('utf-8') + "\n")
-					f.write("Map scale: 1:" + unicode(scala_nom).encode('utf-8') + "\n")
-					f.write("Map accuracy: " + unicode(accuratezza).encode('utf-8') + "\n")
-					f.write("Lineage: " + unicode(lineage).encode('utf-8') + "\n")
+					f.write("Data owner: " + propretario + "\n")
+					f.write("Owner's phone: " + tel_prop + "\n")
+					f.write("Owner's email: " + email_prop + "\n")
+					f.write("Owner's website: " + sito_prop + "\n")
+					f.write("Keyword: " + keyword + "\n")
+					f.write("Map scale: 1:" + scala_nom + "\n")
+					f.write("Map accuracy: " + accuratezza + "\n")
+					f.write("Lineage: " + lineage + "\n")
 
 					project = QgsProject.instance()
-					project.read(QFileInfo(path_comune + os.sep + "progetto_MS.qgs"))
+					project.read(path_comune + os.sep + "progetto_MS.qgs")
 
-					sourceLYR = QgsMapLayerRegistry.instance().mapLayersByName("Limiti comunali")[0]
+					sourceLYR = QgsProject.instance().mapLayersByName("Limiti comunali")[0]
 					selection = sourceLYR.getFeatures(QgsFeatureRequest().setFilterExpression (u""""cod_istat" = '""" + cod_istat + """'"""))
-					sourceLYR.setSelectedFeatures([k.id() for k in selection])
+					sourceLYR.selectByIds([k.id() for k in selection])
 
-					destLYR = QgsMapLayerRegistry.instance().mapLayersByName("Comune del progetto")[0]
+					destLYR = QgsProject.instance().mapLayersByName("Comune del progetto")[0]
 					selected_features = sourceLYR.selectedFeatures()
 					features = []
 					for i in selected_features:
@@ -169,35 +171,42 @@ class nuovo_progetto(QtGui.QDialog, FORM_CLASS):
 					shutil.copyfile(logo_regio_in, logo_regio_out)
 
 					mainPath = (QgsProject.instance().fileName()).split("progetto")[0]
-					self.mappa_insieme(mainPath, sourceLYR)
+					# TODO
+					# self.mappa_insieme(mainPath, sourceLYR)
 
 					canvas = iface.mapCanvas()
 					extent = destLYR.extent()
 					canvas.setExtent(extent)
 
-					composers = iface.activeComposers()
-					for composer_view in composers:
-						composition = composer_view.composition()
-						map_item = composition.getComposerItemById('mappa_0')
-						map_item.setMapCanvas(canvas)
-						map_item.zoomToExtent(canvas.extent())
-						map_item_2 = composition.getComposerItemById('regio_title')
-						map_item_2.setText("Regione " + REGIONE[codice_regio])
-						map_item_3 = composition.getComposerItemById('com_title')
-						map_item_3.setText("Comune di " + nome)
-						map_item_4 = composition.getComposerItemById('logo')
-						map_item_4.refreshPicture()
-						map_item_5 = composition.getComposerItemById('mappa_1')
-						map_item_5.refreshPicture()
+					# TODO
+					# manager = project.layoutManager()
+					# layouts = manager.layouts()
+					# for layout in layouts:
+					# 	map_item = layout.itemById('mappa_0') # QgsLayoutItemMap
+					# ........
+
+					# composers = iface.activeComposers()
+					# for composer_view in composers:
+					# 	composition = composer_view.composition()
+					# 	map_item = composition.getComposerItemById('mappa_0')
+					# 	map_item.setMapCanvas(canvas)
+					# 	map_item.zoomToExtent(canvas.extent())
+					# 	map_item_2 = composition.getComposerItemById('regio_title')
+					# 	map_item_2.setText("Regione " + REGIONE[codice_regio])
+					# 	map_item_3 = composition.getComposerItemById('com_title')
+					# 	map_item_3.setText("Comune di " + nome)
+					# 	map_item_4 = composition.getComposerItemById('logo')
+					# 	map_item_4.refreshPicture()
+					# 	map_item_5 = composition.getComposerItemById('mappa_1')
+					# 	map_item_5.refreshPicture()
 
 ##					project.write()
 
-				except WindowsError:
-					QMessageBox.critical(None, u'ERROR!', u'Error:')
 				except Exception as z:
-					QMessageBox.critical(None, u'ERROR!', u'Error:\n"' + str(z) + '"')
-					if os.path.exists(dir_out + os.sep + "progetto_MS"):
-						shutil.rmtree(dir_out + os.sep + "progetto_MS")
+					# QMessageBox.critical(None, u'ERROR!', u'Error:\n"' + str(z) + '"')
+					# if os.path.exists(dir_out + os.sep + "progetto_MS"):
+					# 	shutil.rmtree(dir_out + os.sep + "progetto_MS")
+					raise z
 			else:
 				QMessageBox.warning(iface.mainWindow(), u'WARNING!', u"The selected directory does not exist!")
 
@@ -220,21 +229,21 @@ class nuovo_progetto(QtGui.QDialog, FORM_CLASS):
 			self.button_box.setEnabled(False)
 
 	def update_cod_istat(self, dizionario, nome_comune_sel, campo):
-		for chiave, valore in dizionario.iteritems():
+		for chiave, valore in dizionario.items():
 			if chiave == nome_comune_sel:
 				campo.setText(valore)
 
 	def update_num(self, value, n1, n2):
 		try:
 			valore = int(value.text())
-			if valore not in range(n1, n2):
+			if valore not in list(range(n1, n2)):
 				value.setText('')
 		except:
 			value.setText('')
 
 	def mappa_insieme(self, mainPath, destLYR):
 
-		destLYR = QgsMapLayerRegistry.instance().mapLayersByName("Limiti comunali")[0]
+		destLYR = QgsProject.instance().mapLayersByName("Limiti comunali")[0]
 		canvas = iface.mapCanvas()
 		extent = destLYR.extent()
 		canvas.setExtent(extent)

@@ -1,3 +1,4 @@
+from builtins import range
 # -*- coding: utf-8 -*-
 #-------------------------------------------------------------------------------
 # Name:		tb_edit_win.py
@@ -5,9 +6,9 @@
 # Created:	 08-02-2018
 #-------------------------------------------------------------------------------
 
-from PyQt4 import QtGui, uic
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qgis.PyQt import uic
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
 from qgis.utils import *
 from qgis.core import *
 from qgis.gui import *
@@ -18,7 +19,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 	os.path.dirname(__file__), 'tb_edit_win.ui'))
 
 
-class edit_win(QtGui.QDialog, FORM_CLASS):
+class edit_win(QDialog, FORM_CLASS):
 
 	def __init__(self, parent=None):
 		"""Constructor."""
@@ -106,7 +107,7 @@ class edit_win(QtGui.QDialog, FORM_CLASS):
 	def update_num(self, value, n1, n2):
 		try:
 			valore = int(value.text())
-			if valore not in range(n1, n2):
+			if valore not in list(range(n1, n2)):
 				value.setText('')
 		except:
 			value.setText('')

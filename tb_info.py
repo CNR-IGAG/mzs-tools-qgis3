@@ -5,9 +5,10 @@
 # Created:	 08-02-2018
 #-------------------------------------------------------------------------------
 
-from PyQt4 import QtGui, uic
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qgis.PyQt import uic
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
+from qgis.PyQt.QtGui import QIcon
 from qgis.utils import *
 from qgis.core import *
 from qgis.gui import *
@@ -17,7 +18,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 	os.path.dirname(__file__), 'tb_info.ui'))
 
 
-class info(QtGui.QDialog, FORM_CLASS):
+class info(QDialog, FORM_CLASS):
 
 	def __init__(self, parent=None):
 		"""Constructor."""

@@ -1,3 +1,4 @@
+from builtins import str
 # -*- coding: utf-8 -*-
 #-------------------------------------------------------------------------------
 # Name:		tb_valida.py
@@ -5,19 +6,20 @@
 # Created:	 08-02-2018
 #-------------------------------------------------------------------------------
 
-from PyQt4 import QtGui, uic
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qgis.PyQt import uic
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
 from qgis.utils import *
 from qgis.core import *
 from qgis.gui import *
-import os, sys, webbrowser, processing, shutil, constants
+import os, sys, webbrowser, processing, shutil
+from .constants import *
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
 	os.path.dirname(__file__), 'tb_valida.ui'))
 
 
-class valida(QtGui.QDialog, FORM_CLASS):
+class valida(QDialog, FORM_CLASS):
 	def __init__(self, parent=None):
 		"""Constructor."""
 		self.iface = iface
@@ -174,15 +176,13 @@ class valida(QtGui.QDialog, FORM_CLASS):
 				canvas = iface.mapCanvas()
 				layers = canvas.layers()
 				for i in layers:
-				  if i.name() in SHP_VALIDATORE:
-					alayer = i
-					toc.moveLayer(i, groupIndex)
+					if i.name() in SHP_VALIDATORE:
+						alayer = i
+						toc.moveLayer(i, groupIndex)
 				canvas.refresh()
 
 			except IOError:
 				QMessageBox.warning(None, u'WARNING!', u"Open a Seismic Microzonation project before starting this tool!")
-			except WindowsError:
-				QMessageBox.warning(None, u'WARNING!', u"Before running this tool, delete shapefiles for topological validation from the project!")
 			except Exception as z:
 				QMessageBox.critical(None, u'ERROR!', u'Error:\n"' + str(z) + '"')
 
@@ -205,7 +205,7 @@ class valida(QtGui.QDialog, FORM_CLASS):
 	def checkLayers(self, group, dict_layer, dizio_layer):
 		for child in group.children():
 			if isinstance(child, QgsLayerTreeLayer):
-				if child.layer().name() in dizio_layer.keys():
+				if child.layer().name() in list(dizio_layer.keys()):
 					lyr = processing.getObject(child.layer().name())
 					fields = lyr.pendingFields()
 					field_val = {}

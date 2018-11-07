@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from builtins import str
 # -*- coding: utf-8 -*-
 #-------------------------------------------------------------------------------
 # Name:		tb_importa_shp.py
@@ -5,22 +7,23 @@
 # Created:	 08-02-2018
 #-------------------------------------------------------------------------------
 
-from PyQt4 import QtGui, uic
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qgis.PyQt import uic
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
 from qgis.utils import *
 from qgis.core import *
 from qgis.gui import *
-import os, sys, webbrowser, constants
-from workers.import_worker import ImportWorker
-from setup_workers import setup_workers
+import os, sys, webbrowser
+from .constants import *
+from .workers.import_worker import ImportWorker
+from .setup_workers import setup_workers
 
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
 	os.path.dirname(__file__), 'tb_importa_shp.ui'))
 
 
-class importa_shp(QtGui.QDialog, FORM_CLASS):
+class importa_shp(QDialog, FORM_CLASS):
 	def __init__(self, parent=None):
 		"""Constructor."""
 		self.iface = iface
@@ -33,14 +36,14 @@ class importa_shp(QtGui.QDialog, FORM_CLASS):
 		self.dir_input.clear()
 		self.tab_input.clear()
 		self.alert_text.hide()
-		self.button_box.setEnabled(False)
-		self.dir_input.textChanged.connect(self.disableButton)
-		self.tab_input.textChanged.connect(self.disableButton)
+		self.button_box.setEnabled(True)
+		# self.dir_input.textChanged.connect(self.disableButton)
+		# self.tab_input.textChanged.connect(self.disableButton)
 
 		###############################
 		# DEBUG ONLY!
-		# self.dir_input.setText(r"C:\Users\Emanuele Tarquini\Desktop\test\MONTEDINOVE\44034_Montedinove")
-		# self.tab_input.setText(r"C:\Users\Emanuele Tarquini\Desktop\test\MONTEDINOVE\tab_montedinove")
+		self.dir_input.setText(r"/home/francesco/shared/montedinove/44034_Montedinove")
+		self.tab_input.setText(r"/home/francesco/shared/montedinove/tab_montedinove")
 		# self.dir_input.setText("C:\\Users\\Francesco\\Documents\\da_importare\\54051_Spoleto")
 		# self.tab_input.setText("C:\\Users\\Francesco\\Documents\\da_importare\\tab_spoleto")
 		###############################
@@ -53,7 +56,7 @@ class importa_shp(QtGui.QDialog, FORM_CLASS):
 			tab_dir = self.tab_input.text()
 			if os.path.isdir(in_dir) and os.path.isdir(tab_dir):
 				proj_abs_path = str(QgsProject.instance().readPath("./"))
-				map_registry_instance = QgsMapLayerRegistry.instance()
+				map_registry_instance = QgsProject.instance()
 
 				# create import worker
 				worker = ImportWorker(proj_abs_path, in_dir, tab_dir, map_registry_instance)

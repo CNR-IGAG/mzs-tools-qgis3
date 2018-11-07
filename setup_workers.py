@@ -1,3 +1,6 @@
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 # -*- coding: utf-8 -*-
 #-------------------------------------------------------------------------------
 # Name:		setup_workers.py
@@ -5,15 +8,15 @@
 # Created:	 08-02-2018
 #-------------------------------------------------------------------------------
 
-from PyQt4 import QtGui, uic
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qgis.PyQt import QtGui, uic
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
 from qgis.utils import *
 from qgis.core import *
 from qgis.gui import *
 import os, sys, shutil
 
-class setup_workers():
+class setup_workers(object):
 	def __init__(self, parent=None):
 		"""Constructor."""
 		self.iface = iface
@@ -22,7 +25,7 @@ class setup_workers():
 	def start_worker(self, worker, iface, message, log_file=None):
 		############################################
 		# DEBUG ONLY
-		# self.import_reset()
+		self.import_reset()
 		############################################
 
 		# configure the QgsMessageBar
@@ -34,7 +37,7 @@ class setup_workers():
 		cancel_button.clicked.connect(worker.kill)
 		message_bar_item.layout().addWidget(progress_bar)
 		message_bar_item.layout().addWidget(cancel_button)
-		iface.messageBar().pushWidget(message_bar_item, iface.messageBar().INFO)
+		iface.messageBar().pushWidget(message_bar_item)
 
 		# start the worker in a new thread
 		thread = QThread(iface.mainWindow())
@@ -81,7 +84,7 @@ class setup_workers():
 				log_file.write("\n\nProcess interrupted!")
 			iface.messageBar().pushMessage(
 				'Process cancelled.',
-				level=QgsMessageBar.WARNING,
+				level=Qgis.Warning,
 				duration=3)
 
 		# clean up the worker and thread
@@ -106,12 +109,12 @@ class setup_workers():
 		# notify the user that something went wrong
 		iface.messageBar().pushMessage(
 			'Something went wrong! See the message log for more information.',
-			level=QgsMessageBar.CRITICAL,
+			level=Qgis.Critical,
 			duration=3)
 		QgsMessageLog.logMessage(
 			'Worker thread raised an exception: %s' % exception_string,
 			'Worker',
-			level=QgsMessageLog.CRITICAL)
+			level=Qgis.Critical)
 
 		log_file.write("\n\n!!! Worker thread raised an exception:\n\n" + exception_string)
 

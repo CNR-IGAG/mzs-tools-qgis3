@@ -1,3 +1,4 @@
+from builtins import str
 # -*- coding: utf-8 -*-
 #-------------------------------------------------------------------------------
 # Name:		tb_aggiorna_progetto.py
@@ -5,9 +6,9 @@
 # Created:	 24-09-2018
 #-------------------------------------------------------------------------------
 
-from PyQt4 import QtGui, uic
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qgis.PyQt import uic
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
 from qgis.utils import *
 from qgis.core import *
 from qgis.gui import *
@@ -18,7 +19,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 	os.path.dirname(__file__), 'tb_aggiorna_progetto.ui'))
 
 
-class aggiorna_progetto(QtGui.QDialog, FORM_CLASS):
+class aggiorna_progetto(QDialog, FORM_CLASS):
 
 	def __init__(self, parent=None):
 		"""Constructor."""

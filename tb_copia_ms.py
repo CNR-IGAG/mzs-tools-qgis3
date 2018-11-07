@@ -1,3 +1,4 @@
+from builtins import str
 # -*- coding: utf-8 -*-
 #-------------------------------------------------------------------------------
 # Name:		tb_copia_ms.py
@@ -5,9 +6,9 @@
 # Created:	 08-02-2018
 #-------------------------------------------------------------------------------
 
-from PyQt4 import QtGui, uic
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qgis.PyQt import uic
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
 from qgis.utils import *
 from qgis.core import *
 from qgis.gui import *
@@ -18,7 +19,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 	os.path.dirname(__file__), 'tb_copia_ms.ui'))
 
 
-class copia_ms(QtGui.QDialog, FORM_CLASS):
+class copia_ms(QDialog, FORM_CLASS):
 
 	def __init__(self, parent=None):
 		"""Constructor."""

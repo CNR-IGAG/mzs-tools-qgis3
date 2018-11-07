@@ -1,27 +1,31 @@
+from __future__ import absolute_import
+from builtins import object
 # -*- coding: utf-8 -*-
 #-------------------------------------------------------------------------------
 # Name:		MzSTools.py
 # Author:	  Tarquini E.
 # Created:	 20-11-2017
 #-------------------------------------------------------------------------------
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
+from qgis.PyQt.QtGui import QIcon, QPixmap
 from qgis.utils import *
 from qgis.core import *
 from qgis.gui import *
-import os, sys, constants
-from tb_wait import wait
-from tb_nuovo_progetto import nuovo_progetto
-from tb_aggiorna_progetto import aggiorna_progetto
-from tb_importa_shp import importa_shp
-from tb_esporta_shp import esporta_shp
-from tb_edit_win import edit_win
-from tb_copia_ms import copia_ms
-from tb_valida import valida
-from tb_info import info
+import os, sys
+from .constants import *
+from .tb_wait import wait
+from .tb_nuovo_progetto import nuovo_progetto
+from .tb_aggiorna_progetto import aggiorna_progetto
+from .tb_importa_shp import importa_shp
+from .tb_esporta_shp import esporta_shp
+from .tb_edit_win import edit_win
+from .tb_copia_ms import copia_ms
+from .tb_valida import valida
+from .tb_info import info
 
 
-class MzSTools:
+class MzSTools(object):
 
 	def __init__(self, iface):
 		self.iface = iface
@@ -266,7 +270,7 @@ class MzSTools:
 		"Zone stabili liv 3", "Zone instabili liv 3"]
 
 		layer = iface.activeLayer()
-		if layer <> None:
+		if layer != None:
 			if layer.name() in POLY_LYR:
 
 				self.dlg0.show()
@@ -274,7 +278,7 @@ class MzSTools:
 					if fc.name() in POLY_LYR:
 						proj.setSnapSettingsForLayer(fc.id(), True, 0, 0, 20, False)
 
-				for chiave, valore in DIZIO_LAYER.iteritems():
+				for chiave, valore in DIZIO_LAYER.items():
 					if layer.name() == chiave:
 						OtherLayer = QgsMapLayerRegistry.instance().mapLayersByName(valore)[0]
 						proj.setSnapSettingsForLayer(layer.id(), True, 0, 0, 20, True)
@@ -300,7 +304,7 @@ class MzSTools:
 		"Zone stabili liv 3", "Zone instabili liv 3"]
 
 		layer = iface.activeLayer()
-		if layer <> None:
+		if layer != None:
 			if layer.name() in POLIGON_LYR:
 
 				self.dlg0.show()

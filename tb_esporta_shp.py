@@ -1,3 +1,4 @@
+from builtins import str
 # -*- coding: utf-8 -*-
 #-------------------------------------------------------------------------------
 # Name:		tb_esporta_shp.py
@@ -5,19 +6,20 @@
 # Created:	 08-02-2018
 #-------------------------------------------------------------------------------
 
-from PyQt4 import QtGui, uic
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qgis.PyQt import uic
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
 from qgis.utils import *
 from qgis.core import *
 from qgis.gui import *
-import os, sys, webbrowser, shutil, zipfile, sqlite3, constants
+import os, sys, webbrowser, shutil, zipfile, sqlite3
+from .constants import *
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
 	os.path.dirname(__file__), 'tb_esporta_shp.ui'))
 
 
-class esporta_shp(QtGui.QDialog, FORM_CLASS):
+class esporta_shp(QDialog, FORM_CLASS):
 
 	def __init__(self, parent=None):
 		"""Constructor."""
@@ -73,7 +75,7 @@ class esporta_shp(QtGui.QDialog, FORM_CLASS):
 					root = QgsProject.instance().layerTreeRoot()
 					root.addGroup("Validazione")
 
-					for chiave, valore in constants.POSIZIONE.iteritems():
+					for chiave, valore in constants.POSIZIONE.items():
 						sourceLYR = QgsMapLayerRegistry.instance().mapLayersByName(chiave)[0]
 						QgsVectorFileWriter.writeAsVectorFormat(sourceLYR ,output_name + os.sep + valore[0] + os.sep + valore[1],"utf-8",None,"ESRI Shapefile")
 						selected_layer = QgsVectorLayer(output_name + os.sep + valore[0] + os.sep + valore[1] + ".shp", valore[1], 'ogr')

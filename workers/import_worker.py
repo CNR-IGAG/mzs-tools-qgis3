@@ -1,11 +1,14 @@
+from __future__ import absolute_import
+from builtins import next
+from builtins import str
 # -*- coding: utf-8 -*-
 
-from MzSTools.constants import *
+from ..constants import *
 import os, shutil, sqlite3, csv
-from qgis.core import QgsVectorLayer, QgsFeatureRequest, QgsField, QgsVectorJoinInfo, QgsExpressionContext, QgsExpressionContextScope
-from qgis.utils import QgsExpression
+from qgis.core import QgsVectorLayer, QgsFeatureRequest, QgsField, QgsExpressionContext, QgsExpressionContextScope
+from qgis.core import QgsExpression
 
-from abstract_worker import AbstractWorker, UserAbortedNotification
+from .abstract_worker import AbstractWorker, UserAbortedNotification
 
 
 class ImportWorker(AbstractWorker):
@@ -59,12 +62,12 @@ class ImportWorker(AbstractWorker):
 
         # step 2 (inserting features)
         ###############################################
-        for chiave, valore in POSIZIONE.iteritems():
-            
+        for chiave, valore in POSIZIONE.items():
+
             if not os.path.exists(self.in_dir + os.sep + valore[0] + os.sep + valore[1] + ".shp"):
                 self.set_log_message.emit("  '" + chiave + "' shapefile does not exist!\n")
                 continue
-            
+
             sourceLYR = QgsVectorLayer(self.in_dir + os.sep + valore[0] + os.sep + valore[1] + ".shp", valore[1], 'ogr')
             destLYR = self.map_registry_instance.mapLayersByName(chiave)[0]
 
@@ -95,7 +98,7 @@ class ImportWorker(AbstractWorker):
                 self.calc_layer(sourceFeatures, destLYR, commonFields)
                 self.set_message.emit("  '" + chiave + "' shapefile has been copied!")
                 self.set_log_message.emit("  '" + chiave + "' shapefile has been copied!\n")
-                
+
 
             elif chiave == "Zone stabili liv 3" or chiave == "Zone instabili liv 3":
                 sourceFeatures = sourceLYR.getFeatures(QgsFeatureRequest(QgsExpression( " \"LIVELLO\" = 3 " )))
@@ -129,12 +132,12 @@ class ImportWorker(AbstractWorker):
             z_list.append("Indagini_Puntuali")
             self.insert_table("indagini_puntuali", path_tabelle + os.sep + "Indagini_Puntuali.txt")
             self.set_log_message.emit('Insert Indagini_Puntuali -> OK\n')
-            
+
             if os.path.exists(path_tabelle + os.sep + "Parametri_Puntuali.txt"):
                 z_list.append("Parametri_Puntuali")
                 self.insert_table("parametri_puntuali", path_tabelle + os.sep + "Parametri_Puntuali.txt")
                 self.set_log_message.emit('Insert Parametri_Puntuali -> OK\n')
-                
+
                 if os.path.exists(path_tabelle + os.sep + "Curve.txt"):
                     z_list.append("Curve")
                     self.insert_table("curve", path_tabelle + os.sep + "Curve.txt")
@@ -152,7 +155,7 @@ class ImportWorker(AbstractWorker):
             z_list.append("Indagini_Lineari")
             self.insert_table("indagini_lineari", path_tabelle + os.sep + "Indagini_Lineari.txt")
             self.set_log_message.emit('Insert Indagini_Lineari -> OK\n')
-            
+
             if os.path.exists(path_tabelle + os.sep + "Parametri_Lineari.txt"):
                 z_list.append("Parametri_Lineari")
                 self.insert_table("parametri_lineari", path_tabelle + os.sep + "Parametri_Lineari.txt")
@@ -179,7 +182,7 @@ class ImportWorker(AbstractWorker):
 
         dizio_folder = {"Plot" : ["OLD_Plot", self.proj_abs_path + os.sep + "allegati" + os.sep + "Plot", self.in_dir + os.sep + "Plot"], "Documenti" : ["OLD_Documenti", self.proj_abs_path + os.sep + "allegati" + os.sep + "Documenti", self.in_dir + os.sep + "Indagini" + os.sep + "Documenti"], "Spettri" : ["OLD_Spettri", self.proj_abs_path + os.sep + "allegati" + os.sep + "Spettri", self.in_dir + os.sep + "MS23" + os.sep + "Spettri"]}
 
-        for chiave_fold, valore_fold in dizio_folder.iteritems():
+        for chiave_fold, valore_fold in dizio_folder.items():
             self.set_message.emit("Copying '" + chiave_fold + "' folder")
             if os.path.exists(valore_fold[2]):
                 if os.path.exists(self.proj_abs_path + os.sep + "allegati" + os.sep + chiave_fold):
@@ -278,28 +281,28 @@ class ImportWorker(AbstractWorker):
             raise UserAbortedNotification('USER Killed')
 
     def insert_siti(self, vector_layer, txt_table, sito_type):
-        
+
         if sito_type == "puntuale":
             id_field_name = "ID_SPU"
             tab_name = "sito_puntuale"
         else:
             id_field_name = "ID_SLN"
             tab_name = "sito_lineare"
-        
+
         path_db = self.proj_abs_path + os.sep + "db" + os.sep + "indagini.sqlite"
         dict_sito = {}
         conn = sqlite3.connect(path_db)
-        conn.text_factory = lambda x: unicode(x, 'utf-8', 'ignore')
+        conn.text_factory = lambda x: str(x, 'utf-8', 'ignore')
         conn.enable_load_extension(True)
-        
+
         try:
             conn.execute('SELECT load_extension("mod_spatialite")')
             cur = conn.cursor()
-            
+
             # drop insert trigger to speed up import process
             # TODO: causes QGIS crash
             # cur.execute("DROP TRIGGER ins_data_s_point" if tab_name == "sito_puntuale" else "DROP TRIGGER ins_data_s_line")
-            
+
             with open(txt_table,'r') as table:
                 dr = csv.DictReader(table, delimiter=';', quotechar='"')
                 current_feature = 1
@@ -309,14 +312,14 @@ class ImportWorker(AbstractWorker):
                 next(dr)
                 for i in dr:
                     self.set_message.emit("Sito %s: inserting feature %s/%s" % (sito_type, str(current_feature), str(row_num)))
-                    
+
                     # transform empty strings to None to circumvent db CHECKs
                     for k in i:
                         if i[k] == "":
                             i[k] = None
-                    
-                    # populate dict_sito and get geom from vector layer      
-                    for key in i.keys():
+
+                    # populate dict_sito and get geom from vector layer
+                    for key in list(i.keys()):
                         dict_sito[key] = i[key]
                         if key == id_field_name:
                             for feature in vector_layer.getFeatures():
@@ -327,7 +330,7 @@ class ImportWorker(AbstractWorker):
                         cur.execute("INSERT INTO sito_puntuale (id_spu, geom) VALUES (?, GeomFromText(?, 32633))", (dict_sito["ID_SPU"], geom))
                         lastid = cur.lastrowid
                         cur.execute('''UPDATE sito_puntuale SET pkuid = ?, indirizzo = ?, mod_identcoord = ?,
-                            desc_modcoord = ?, quota_slm = ?, modo_quota = ?, data_sito = ?, note_sito = ? 
+                            desc_modcoord = ?, quota_slm = ?, modo_quota = ?, data_sito = ?, note_sito = ?
                             WHERE pkuid = ?;''',  (dict_sito["pkey_spu"], dict_sito["indirizzo"], dict_sito["mod_identcoord"],
                             dict_sito["desc_modcoord"], dict_sito["quota_slm"], dict_sito["modo_quota"],
                             dict_sito["data_sito"], dict_sito["note_sito"], lastid))
@@ -335,78 +338,78 @@ class ImportWorker(AbstractWorker):
                         cur.execute("INSERT INTO sito_lineare (id_sln, geom) VALUES (?, GeomFromText(?, 32633))", (dict_sito["ID_SLN"], geom))
                         lastid = cur.lastrowid
                         cur.execute('''UPDATE sito_lineare SET pkuid = ?, mod_identcoord = ?,
-                            desc_modcoord = ?, aquota = ?, bquota = ?, data_sito = ?, note_sito = ? 
+                            desc_modcoord = ?, aquota = ?, bquota = ?, data_sito = ?, note_sito = ?
                             WHERE pkuid = ?;''',  (dict_sito["pkey_sln"], dict_sito["mod_identcoord"],
                             dict_sito["desc_modcoord"], dict_sito["Aquota"], dict_sito["Bquota"],
                             dict_sito["data_sito"], dict_sito["note_sito"], lastid))
-                    
+
                     current_feature = current_feature + 1
                     if self.killed:
                         break
-            
+
             # restore insert trigger
             # TODO: causes QGIS crash
             # cur.execute(ins_data_s_point if tab_name == "sito_puntuale" else ins_data_s_line)
-            
+
             conn.commit()
-            
+
             # check if spatial index needs rebuild
             cur.execute('SELECT RecoverSpatialIndex(?, ?)', (tab_name, 'geom'))
         finally:
             conn.close()
- 
+
     def insert_table(self, db_table, txt_table):
-        
+
         # indagini_puntuali
         insert_indpu = """
-            INSERT INTO indagini_puntuali 
-                (pkuid, id_spu, classe_ind, tipo_ind, id_indpu, 
-                id_indpuex, arch_ex, note_ind, prof_top, prof_bot, 
-                spessore, quota_slm_top, quota_slm_bot, data_ind, 
+            INSERT INTO indagini_puntuali
+                (pkuid, id_spu, classe_ind, tipo_ind, id_indpu,
+                id_indpuex, arch_ex, note_ind, prof_top, prof_bot,
+                spessore, quota_slm_top, quota_slm_bot, data_ind,
                 doc_pag, doc_ind)
             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"""
         select_id_spu = "SELECT pkuid, id_spu FROM sito_puntuale WHERE pkuid = ?"
         update_indpu_fkey = "UPDATE indagini_puntuali SET id_spu = ? WHERE pkuid = ?"
-        
+
         # parametri_puntuali
         insert_parpu = """
-            INSERT INTO parametri_puntuali 
-                (pkuid, id_indpu, tipo_parpu, id_parpu, prof_top, prof_bot, 
-                spessore, quota_slm_top, quota_slm_bot, valore, attend_mis, 
-                tab_curve, note_par, data_par) 
+            INSERT INTO parametri_puntuali
+                (pkuid, id_indpu, tipo_parpu, id_parpu, prof_top, prof_bot,
+                spessore, quota_slm_top, quota_slm_bot, valore, attend_mis,
+                tab_curve, note_par, data_par)
             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"""
         select_id_indpu = "SELECT pkuid, id_indpu FROM indagini_puntuali WHERE pkuid = ?"
         update_parpu_fkey = "UPDATE parametri_puntuali SET id_indpu = ? WHERE pkuid = ?"
-        
+
         # curve
         insert_curve = """
-            INSERT INTO curve (pkuid, id_parpu, cond_curve, varx, vary) 
+            INSERT INTO curve (pkuid, id_parpu, cond_curve, varx, vary)
                 VALUES (?,?,?,?,?);"""
         select_id_parpu = "SELECT pkuid, id_parpu FROM parametri_puntuali WHERE pkuid = ?"
         update_curve_fkey = "UPDATE curve SET id_parpu = ? WHERE pkuid = ?"
-        
+
         # indagini_lineari
         insert_indln = """
-            INSERT INTO indagini_lineari 
-                (pkuid, id_sln, classe_ind, tipo_ind, id_indln, id_indlnex, 
-                arch_ex, note_indln, data_ind, doc_pag, doc_ind) 
+            INSERT INTO indagini_lineari
+                (pkuid, id_sln, classe_ind, tipo_ind, id_indln, id_indlnex,
+                arch_ex, note_indln, data_ind, doc_pag, doc_ind)
             VALUES (?,?,?,?,?,?,?,?,?,?,?)"""
         select_id_sln = "SELECT pkuid, id_sln FROM sito_lineare WHERE pkuid = ?"
         update_indln_fkey = "UPDATE indagini_lineari SET id_sln = ? WHERE pkuid = ?"
-        
+
         # parametri_lineari
         insert_parln = """
-            INSERT INTO parametri_lineari 
-                (pkuid, id_indln, tipo_parln, id_parln, prof_top, prof_bot, 
-                spessore, quota_slm_top, quota_slm_bot, valore, attend_mis, 
-                note_par, data_par) 
+            INSERT INTO parametri_lineari
+                (pkuid, id_indln, tipo_parln, id_parln, prof_top, prof_bot,
+                spessore, quota_slm_top, quota_slm_bot, valore, attend_mis,
+                note_par, data_par)
             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"""
         select_id_indln = "SELECT pkuid, id_indln FROM indagini_lineari WHERE pkuid = ?"
         update_parln_fkey = "UPDATE parametri_lineari SET id_indln = ? WHERE pkuid = ?"
-        
+
         path_db = self.proj_abs_path + os.sep + "db" + os.sep + "indagini.sqlite"
         conn = sqlite3.connect(path_db)
-        conn.text_factory = lambda x: unicode(x, 'utf-8', 'ignore')
+        conn.text_factory = lambda x: str(x, 'utf-8', 'ignore')
         try:
             cur = conn.cursor()
             with open(txt_table,'r') as table:
@@ -423,7 +426,7 @@ class ImportWorker(AbstractWorker):
                     for k in i:
                         if i[k] == "":
                             i[k] = None
-                            
+
                     if db_table == "indagini_puntuali":
                         to_db = (i['pkey_indpu'], i['pkey_spu'], i['classe_ind'], i['tipo_ind'], i['ID_INDPU'], i['id_indpuex'], i['arch_ex'], i['note_ind'], i['prof_top'], i['prof_bot'], i['spessore'], i['quota_slm_top'], i['quota_slm_bot'], i['data_ind'], i['doc_pag'], i['doc_ind'])
                         fkey = i['pkey_spu']
@@ -454,17 +457,17 @@ class ImportWorker(AbstractWorker):
                         insert_sql = insert_parln
                         select_parent_sql = select_id_indln
                         update_sql = update_parln_fkey
-                    
+
                     cur.execute(insert_sql, to_db)
                     id_last_insert = cur.lastrowid
                     cur.execute(select_parent_sql, (fkey,))
                     id_parent = cur.fetchone()[1]
                     cur.execute(update_sql, (id_parent, id_last_insert))
-    
+
                     current_record = current_record + 1
                     if self.killed:
                         break
-    
+
             conn.commit()
         finally:
             conn.close()
@@ -489,7 +492,7 @@ class ImportWorker(AbstractWorker):
 
         try:
             conn = sqlite3.connect(path_db)
-            conn.text_factory = lambda x: unicode(x, 'utf-8', 'ignore')
+            conn.text_factory = lambda x: str(x, 'utf-8', 'ignore')
             cur = conn.cursor()
 
             for feature in orig_tab.getFeatures():
@@ -516,4 +519,3 @@ class ImportWorker(AbstractWorker):
             full_file_name = os.path.join(src, file_name)
             if (os.path.isfile(full_file_name)):
                 shutil.copy(full_file_name, dest)
-
