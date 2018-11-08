@@ -1,45 +1,55 @@
-# MZS TOOLS
+Work-in-progress port of [MzS Tools](https://github.com/CNR-IGAG/mzs-tools) to QGIS 3.
 
-This plugin was created to realize a project based on a light and fast SpatiaLite geodatabase for data storage and maps production according to the italian "Criteria for Seismic Microzonation".
+## Development setup
 
-Seismic Microzonation studies are carried out in order to define zones, in urban areas, which have a homogeneous seismic behavior.
+- Install [pipenv](https://pipenv.readthedocs.io/en/latest/install/#installing-pipenv)
 
-Seismic Microzonation studies include the following maps:
+    ```bash
+    pip3 install pipenv --user
+    ```
 
-- Investigation map ("Carta delle Indagini");
-- Geological-Technical Map for Seismic Microzonation ("Carta Geologico-Tecnica");
-- Map of Seismically Homogeneous Microzones ("Carta delle Microzone Omogenee in Prospettiva sismica");
-- Seismic Microzonation Map ("Carta di Microzonazione Sismica").
+- Clone or download repository
 
-The plugin was created to give the opportunity to quickly perform standard compliant Seismic Microzonation studies.
+- Install dependencies and create virtualenv
 
-### Changelog:
+    ```bash
+    cd mzs-tools-qgis3
+    pipenv install --dev
+    ```
 
-#### v0.7:
+- Activate virtualenv
 
-- moved import process to a separate thread;
-- import progress shown in qgis interface;
-- fixed bug with empty numeric values in csv files during import;
-- reimplemented import log file;
-- added "Update project" tool;
-- update project (in particular .ui, .py files);
-- updated italian manuals.
+    ```bash
+    pipenv shell
+    ```
 
-#### v0.6:
+- Set your QGIS plugins folder in `pb_tool.cfg`
 
-- video-guide additions;
-- update project (in particular .ui, .py files);
-- resolved bugs;
-- updated italian manual.
+    ```
+    plugin_path: /your/.local/share/QGIS/QGIS3/profiles/default/python/plugins
+    ```
 
-#### v0.5:
+- Use [pb_tool](http://g-sherman.github.io/plugin_build_tool/)
 
-- improved "Add feature or record" tool;
-- removed useless tool;
-- update project (in particular .ui, .py files);
-- resolved bugs;
-- updated manuals.
+    ```bash
+    pb_tool validate
+    pb_tool compile
 
-#### v0.4:
+    # deploy in the qgis plugin folder
+    pb_tool deploy
+    ```
 
-- initial relase.
+### Caveats
+
+- On Ubuntu some packages should be installed:
+
+    ```bash
+    sudo apt install python3-pip virtualenv python3-venv qttools5-dev-tools
+    ```
+
+- Sphinx autodoc function likely requires to set the path to system libraries in `conf.py`:
+
+    ```python
+    sys.path.insert(0, '/usr/lib/python3/dist-packages/')
+    extensions = [..., 'sphinx.ext.autodoc']
+    ```

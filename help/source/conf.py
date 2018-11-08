@@ -20,7 +20,7 @@ import sys, os
 # plugin root folder
 sys.path.insert(0, os.path.abspath('../../'))
 # system python libraries (eg. PyQt5)
-sys.path.insert(0, '/usr/lib/python3/dist-packages/')
+# sys.path.insert(0, '/usr/lib/python3/dist-packages/')
 
 # -- General configuration -----------------------------------------------------
 
@@ -29,7 +29,8 @@ sys.path.insert(0, '/usr/lib/python3/dist-packages/')
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.todo', 'sphinx.ext.imgmath', 'sphinx.ext.viewcode', 'sphinx.ext.autodoc']
+# extensions = ['sphinx.ext.todo', 'sphinx.ext.imgmath', 'sphinx.ext.viewcode', 'sphinx.ext.autodoc']
+extensions = ['sphinx.ext.todo', 'sphinx.ext.imgmath', 'sphinx.ext.viewcode']
 
 # autodoc_mock_imports = ["MzSTools.resources"]
 # autodoc_warningiserror = False
@@ -98,7 +99,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
